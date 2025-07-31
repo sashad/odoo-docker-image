@@ -1,0 +1,22 @@
+[project]
+name = "odoo-docker-image"
+# Мы храним версию в файле `VERSION`.
+# Это позволяет унифицировать логику версионирования разных проектов (например, проектов без файла `pyproject.toml`) и
+# чаще переиспользовать Docker-слои, так как не каждое обновление версии сопровождается обновлением зависимостей Python.
+version = "0.0.0"
+authors = [
+    { name = "Aleksandr Demidov", email = "demidoff@1vp.ru" },
+]
+# https://docs.astral.sh/uv/reference/resolver-internals/#requires-python
+requires-python = "==3.10.*"
+# https://docs.astral.sh/uv/concepts/dependencies/#project-dependencies
+dependencies = [
+    "pandoc>=2.4",
+    "wheel>=0.45.1",
+]
+
+# https://docs.astral.sh/uv/concepts/dependencies/#development-dependencies
+[dependency-groups]
+dev = [
+    "pytest==8.4.*",
+]
