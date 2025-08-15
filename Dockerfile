@@ -150,5 +150,5 @@ RUN rm -f /tmp/debs/*
 # end
 
 USER odoo
+RUN rm -rf ~/.cache/*
 ENTRYPOINT ["/entrypoint.sh"]
-
