@@ -90,6 +90,8 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/multi-company.git --branch 17.0 vendor/OCA/multi-company
     git clone https://github.com/OCA/contract.git --branch 17.0 vendor/OCA/contract
     git clone https://github.com/OCA/knowledge.git --branch 17.0 vendor/OCA/knowledge
+    git clone https://github.com/OCA/server-tools.git --branch 17.0 vendor/OCA/server-tools
+    git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
 EOF
 
 # Задаём переменные окружения.
@@ -131,6 +133,7 @@ RUN --mount=type=cache,destination=~/.cache/uv <<EOF
     uv pip install -r vendor/OCA/web/requirements.txt
     uv pip install -r vendor/OCA/contract/requirements.txt
     uv pip install -r vendor/OCA/reporting-engine/requirements.txt
+    uv pip install -r vendor/OCA/server-tools/requirements.txt
 EOF
 # end
 
