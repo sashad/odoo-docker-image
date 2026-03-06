@@ -91,6 +91,7 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/contract.git --branch 17.0 vendor/OCA/contract
     git clone https://github.com/OCA/knowledge.git --branch 17.0 vendor/OCA/knowledge
     git clone https://github.com/OCA/server-tools.git --branch 17.0 vendor/OCA/server-tools
+    git clone https://github.com/OCA/iot.git --branch 17.0 vendor/OCA/iot
     git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
 EOF
 
@@ -134,6 +135,7 @@ RUN --mount=type=cache,destination=~/.cache/uv <<EOF
     uv pip install -r vendor/OCA/contract/requirements.txt
     uv pip install -r vendor/OCA/reporting-engine/requirements.txt
     uv pip install -r vendor/OCA/server-tools/requirements.txt
+    uv pip install -r vendor/OCA/iot/requirements.txt
 EOF
 # end
 
