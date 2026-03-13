@@ -92,6 +92,9 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/knowledge.git --branch 17.0 vendor/OCA/knowledge
     git clone https://github.com/OCA/server-tools.git --branch 17.0 vendor/OCA/server-tools
     git clone https://github.com/OCA/iot.git --branch 17.0 vendor/OCA/iot
+    git clone https://github.com/OCA/helpdesk.git --branch 17.0 vendor/OCA/helpdesk
+    git clone https://github.com/OCA/dms.git --branch 17.0 vendor/OCA/dms
+    git clone https://github.com/OCA/payroll.git --branch 17.0 vendor/OCA/payroll
     git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
 EOF
 
@@ -129,13 +132,15 @@ EOF
 ENV UV_PYTHON=$UV_PROJECT_ENVIRONMENT
 
 # Устанавливаем зависимости для базовых пакетов из vendor.
-RUN --mount=type=cache,destination=~/.cache/uv <<EOF 
+RUN --mount=type=cache,destination=~/.cache/uv <<EOF
+    uv pip install --force-reinstall "setuptools<81"
     uv pip install -r OCB_requirements.txt
     uv pip install -r vendor/OCA/web/requirements.txt
     uv pip install -r vendor/OCA/contract/requirements.txt
     uv pip install -r vendor/OCA/reporting-engine/requirements.txt
     uv pip install -r vendor/OCA/server-tools/requirements.txt
     uv pip install -r vendor/OCA/iot/requirements.txt
+    uv pip install -r vendor/OCA/payroll/requirements.txt
 EOF
 # end
 

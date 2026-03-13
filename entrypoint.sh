@@ -5,4 +5,4 @@ sudo chown -R odoo:odoo /var/lib/odoo
 sudo chown odoo:odoo /mnt/extra-addons
 cd vendor/OCA/OCB/
 source ~/.venv/bin/activate
-./odoo-bin $@
+python odoo-bin $@
