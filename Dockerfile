@@ -141,6 +141,7 @@ RUN --mount=type=cache,destination=~/.cache/uv <<EOF
     uv pip install -r vendor/OCA/server-tools/requirements.txt
     uv pip install -r vendor/OCA/iot/requirements.txt
     uv pip install -r vendor/OCA/payroll/requirements.txt
+    uv pip install RestrictedPython
 EOF
 # end
 
