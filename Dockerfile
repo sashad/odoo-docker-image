@@ -29,7 +29,8 @@ RUN <<EOF
         python3-wheel libfreetype6-dev libxml2-dev libzip-dev libsasl2-dev \
         python3-setuptools node-less libjpeg-dev zlib1g-dev libpq-dev \
         libxslt1-dev libldap2-dev libtiff5-dev libopenjp2-7-dev libcap-dev \
-        ca-certificates fontconfig libfreetype6 libjpeg-turbo8 libpng16-16 libstdc++6 libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base zlib1g \
+        ca-certificates fontconfig libfreetype6 libjpeg-turbo8 libpng16-16 \
+        libstdc++6 libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base zlib1g \
         locales \
         libldap-dev \
         libsasl2-dev \
@@ -41,7 +42,8 @@ RUN <<EOF
         net-tools \
         iproute2 \
         iputils-ping \
-        python-dev-is-python3
+        python-dev-is-python3 \
+        postgresql-client-16
     rm -rf /var/lib/apt/lists/*
 EOF
 
