@@ -99,6 +99,7 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/storage.git --branch 17.0 vendor/OCA/storage
     git clone https://github.com/OCA/server-env.git --branch 17.0 vendor/OCA/server-env
     git clone https://github.com/OCA/payroll.git --branch 17.0 vendor/OCA/payroll
+    git clone https://github.com/OCA/queue.git --branch 17.0 vendor/OCA/queue
     git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
 EOF
 
@@ -147,7 +148,11 @@ RUN --mount=type=cache,destination=~/.cache/uv <<EOF
     uv pip install -r vendor/OCA/storage/requirements.txt
     uv pip install -r vendor/OCA/server-env/requirements.txt
     uv pip install -r vendor/OCA/payroll/requirements.txt
+    uv pip install -r vendor/OCA/queue/requirements.txt
     uv pip install RestrictedPython
+    uv pip install asyncio-mqtt
+    uv pip install aiomqtt
+    uv pip install redis
 EOF
 # end
 
