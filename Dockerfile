@@ -31,12 +31,14 @@ RUN <<EOF
         libxslt1-dev libldap2-dev libtiff5-dev libopenjp2-7-dev libcap-dev \
         ca-certificates fontconfig libfreetype6 libjpeg-turbo8 libpng16-16 \
         libstdc++6 libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base zlib1g \
+        ffmpeg \
         locales \
         libldap-dev \
         libsasl2-dev \
         node-less \
         npm \
         nginx \
+        libnginx-mod-rtmp \
         mc \
         sudo \
         net-tools \
@@ -100,6 +102,7 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/server-env.git --branch 17.0 vendor/OCA/server-env
     git clone https://github.com/OCA/payroll.git --branch 17.0 vendor/OCA/payroll
     git clone https://github.com/OCA/queue.git --branch 17.0 vendor/OCA/queue
+    git clone https://github.com/OCA/rest-framework.git --branch 17.0 vendor/OCA/rest_framework
     git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
 EOF
 
@@ -149,6 +152,7 @@ RUN --mount=type=cache,destination=~/.cache/uv <<EOF
     uv pip install -r vendor/OCA/server-env/requirements.txt
     uv pip install -r vendor/OCA/payroll/requirements.txt
     uv pip install -r vendor/OCA/queue/requirements.txt
+    uv pip install -r vendor/OCA/rest_framework/requirements.txt
     uv pip install RestrictedPython
     uv pip install asyncio-mqtt
     uv pip install aiomqtt
