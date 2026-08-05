@@ -53,23 +53,13 @@ RUN rm -f /etc/nginx/sites-enabled/*
 COPY etc /etc
 COPY debs /tmp/debs
 RUN locale-gen
-RUN useradd -ms /bin/bash odoo
-COPY --chown=odoo:odoo ./entrypoint.sh /
-
-# Копируем утилиту `uv` из официального Docker-образа.
-# https://github.com/astral-sh/uv/pkgs/container/uv
-# опция `--link` позволяет переиспользовать слой, даже если предыдущие слои изменились.
-# https://docs.docker.com/reference/dockerfile/#copy---link
-COPY --link --from=ghcr.io/astral-sh/uv:0.7.21 /uv /usr/local/bin/uv
-
-COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
-# Install Odoo
-ENV ODOO_VERSION="17.0" \
-    DIR_PROJECT="_project"
+# Create odoo group and user
+RUN groupadd -r odoo && \
+    useradd -r -g odoo -ms /bin/bash odoo
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
@@ -77,33 +67,54 @@ RUN chown odoo /etc/odoo/odoo.conf \
     && chown -R odoo /mnt/extra-addons
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
+# Switch to odoo user immediately
+USER odoo
+
+# Copy entrypoint.sh with chown
+COPY --chown=odoo:odoo ./entrypoint.sh /
+
+# Копируем утилиту `uv` из официального Docker-образа.
+# https://github.com/astral-sh/uv/pkgs/container/uv
+# опция `--link` позволяет переиспользовать слой, даже если предыдущие слои изменились.
+# https://docs.docker.com/reference/dockerfile/#copy---link
+COPY --link --from=ghcr.io/astral-sh/uv:0.12.1 /uv /usr/local/bin/uv
+
+COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
+
+# Install Odoo
+ENV ODOO_VERSION="18.0" \
+    DIR_PROJECT="_project"
+
 # Set the default config file
 ENV ODOO_RC=/etc/odoo/odoo.conf
 
-USER odoo
+# Set working directory
 WORKDIR /home/odoo
-COPY --link --chown=odoo:odoo vendor vendor
-#COPY src src
+RUN mkdir -p /home/odoo && chown odoo:odoo /home/odoo
+
+# Copy vendor directory with chown
+COPY --chown=odoo:odoo vendor vendor
 
 # Загружаем нужные репы odoo из OCA
 RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
-    git clone https://github.com/OCA/OCB.git --branch 17.0 vendor/OCA/OCB
-    git clone https://github.com/OCA/web.git --branch 17.0 vendor/OCA/web
-    git clone https://github.com/OCA/website.git --branch 17.0 vendor/OCA/website
-    git clone https://github.com/OCA/reporting-engine.git --branch 17.0 vendor/OCA/reporting-engine
-    git clone https://github.com/OCA/multi-company.git --branch 17.0 vendor/OCA/multi-company
-    git clone https://github.com/OCA/contract.git --branch 17.0 vendor/OCA/contract
-    git clone https://github.com/OCA/knowledge.git --branch 17.0 vendor/OCA/knowledge
-    git clone https://github.com/OCA/server-tools.git --branch 17.0 vendor/OCA/server-tools
-    git clone https://github.com/OCA/iot.git --branch 17.0 vendor/OCA/iot
-    git clone https://github.com/OCA/helpdesk.git --branch 17.0 vendor/OCA/helpdesk
-    git clone https://github.com/OCA/dms.git --branch 17.0 vendor/OCA/dms
-    git clone https://github.com/OCA/storage.git --branch 17.0 vendor/OCA/storage
-    git clone https://github.com/OCA/server-env.git --branch 17.0 vendor/OCA/server-env
-    git clone https://github.com/OCA/payroll.git --branch 17.0 vendor/OCA/payroll
-    git clone https://github.com/OCA/queue.git --branch 17.0 vendor/OCA/queue
-    git clone https://github.com/OCA/rest-framework.git --branch 17.0 vendor/OCA/rest_framework
-    git clone https://github.com/odoomates/odooapps.git --branch 17.0 vendor/odoomates/odooapps
+    git clone https://github.com/OCA/OCB.git --branch 18.0 vendor/OCA/OCB
+    git clone https://github.com/OCA/web.git --branch 18.0 vendor/OCA/web
+    git clone https://github.com/OCA/website.git --branch 18.0 vendor/OCA/website
+    git clone https://github.com/OCA/reporting-engine.git --branch 18.0 vendor/OCA/reporting-engine
+    git clone https://github.com/OCA/multi-company.git --branch 18.0 vendor/OCA/multi-company
+    git clone https://github.com/OCA/contract.git --branch 18.0 vendor/OCA/contract
+    git clone https://github.com/OCA/knowledge.git --branch 18.0 vendor/OCA/knowledge
+    git clone https://github.com/OCA/server-tools.git --branch 18.0 vendor/OCA/server-tools
+    git clone https://github.com/OCA/iot.git --branch 18.0 vendor/OCA/iot
+    git clone https://github.com/OCA/helpdesk.git --branch 18.0 vendor/OCA/helpdesk
+    git clone https://github.com/OCA/dms.git --branch 18.0 vendor/OCA/dms
+    git clone https://github.com/OCA/storage.git --branch 18.0 vendor/OCA/storage
+    git clone https://github.com/OCA/server-env.git --branch 18.0 vendor/OCA/server-env
+    git clone https://github.com/OCA/payroll.git --branch 18.0 vendor/OCA/payroll
+    git clone https://github.com/OCA/queue.git --branch 18.0 vendor/OCA/queue
+    git clone https://github.com/OCA/rest-framework.git --branch 18.0 vendor/OCA/rest_framework
+    git clone https://github.com/OCA/ai.git --branch 18.0 vendor/OCA/ai
+    git clone https://github.com/odoomates/odooapps.git --branch 18.0 vendor/odoomates/odooapps
 EOF
 
 # Задаём переменные окружения.
@@ -140,25 +151,25 @@ EOF
 ENV UV_PYTHON=$UV_PROJECT_ENVIRONMENT
 
 # Устанавливаем зависимости для базовых пакетов из vendor.
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install --force-reinstall "setuptools<81"
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r OCB_requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/web/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/website/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/contract/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/reporting-engine/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/server-tools/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/storage/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/server-env/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/payroll/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/queue/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/rest_framework/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/ai/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv <<EOF
-    uv pip install --force-reinstall "setuptools<81"
-    uv pip install -r OCB_requirements.txt
-    uv pip install -r vendor/OCA/web/requirements.txt
-    uv pip install -r vendor/OCA/contract/requirements.txt
-    uv pip install -r vendor/OCA/reporting-engine/requirements.txt
-    uv pip install -r vendor/OCA/server-tools/requirements.txt
-    uv pip install -r vendor/OCA/iot/requirements.txt
-    uv pip install -r vendor/OCA/storage/requirements.txt
-    uv pip install -r vendor/OCA/server-env/requirements.txt
-    uv pip install -r vendor/OCA/payroll/requirements.txt
-    uv pip install -r vendor/OCA/queue/requirements.txt
-    uv pip install -r vendor/OCA/rest_framework/requirements.txt
     uv pip install RestrictedPython
     uv pip install asyncio-mqtt
     uv pip install aiomqtt
     uv pip install redis
 EOF
-# end
 
 # Выводим информацию о текущем окружении и проверяем работоспособность импорта модуля проекта.
 RUN <<EOF
@@ -169,11 +180,9 @@ EOF
 USER root
 
 # Доустанавливаем пакеты из vendor
-RUN dpkg -i /home/odoo/vendor/OCA/website/pandoc-3.6-1-amd64.deb
 RUN dpkg -i /tmp/debs/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 RUN dpkg -i /tmp/debs/wkhtmltox_0.12.5-1.bionic_amd64.deb
 RUN rm -f /tmp/debs/*
-# end
 
 USER odoo
 RUN rm -rf ~/.cache/*

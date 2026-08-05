@@ -2,12 +2,12 @@
 
 ## build image
 ```
-docker buildx build --tag odoo.oca.ostwind.17:latest .
+docker buildx build --tag odoo.oca.ostwind.18:latest .
 ```
 
 ## run
 ```
-docker run --add-host db=172.17.0.1 -v odoo-data:/var/lib/odoo -v ./src:/mnt/extra-addons --rm -it --name=feature123.test.1vp.ru odoo.oca.ostwind.17:latest
+docker run --add-host db=172.17.0.1 -v odoo-data:/var/lib/odoo -v ./src:/mnt/extra-addons --rm -it --name=feature123.test.1vp.ru odoo.oca.ostwind.18:latest
 ```
 Where:
 - odoo-data: local storage volume.
