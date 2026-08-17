@@ -45,7 +45,8 @@ RUN <<EOF
         iproute2 \
         iputils-ping \
         python-dev-is-python3 \
-        postgresql-client-16
+        postgresql-client-16 \
+        wkhtmltopdf
     rm -rf /var/lib/apt/lists/*
 EOF
 
@@ -103,6 +104,7 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/reporting-engine.git --branch 18.0 vendor/OCA/reporting-engine
     git clone https://github.com/OCA/multi-company.git --branch 18.0 vendor/OCA/multi-company
     git clone https://github.com/OCA/contract.git --branch 18.0 vendor/OCA/contract
+    git clone https://github.com/OCA/calendar.git --branch 18.0 vendor/OCA/calendar
     git clone https://github.com/OCA/knowledge.git --branch 18.0 vendor/OCA/knowledge
     git clone https://github.com/OCA/server-tools.git --branch 18.0 vendor/OCA/server-tools
     git clone https://github.com/OCA/iot.git --branch 18.0 vendor/OCA/iot
@@ -114,6 +116,7 @@ RUN --mount=type=cache,destination=~/.cache/gitlab <<EOF
     git clone https://github.com/OCA/queue.git --branch 18.0 vendor/OCA/queue
     git clone https://github.com/OCA/rest-framework.git --branch 18.0 vendor/OCA/rest_framework
     git clone https://github.com/OCA/ai.git --branch 18.0 vendor/OCA/ai
+    git clone https://github.com/OCA/social.git --branch 18.0 vendor/OCA/social
     git clone https://github.com/odoomates/odooapps.git --branch 18.0 vendor/odoomates/odooapps
 EOF
 
@@ -152,10 +155,12 @@ ENV UV_PYTHON=$UV_PROJECT_ENVIRONMENT
 
 # Устанавливаем зависимости для базовых пакетов из vendor.
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install --force-reinstall "setuptools<81"
-RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r OCB_requirements.txt
+# RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r OCB_requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install --no-build-isolation -r vendor/OCA/OCB/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/web/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/website/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/contract/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/calendar/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/reporting-engine/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/server-tools/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/storage/requirements.txt
@@ -164,7 +169,10 @@ RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/payr
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/queue/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/rest_framework/requirements.txt
 RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/ai/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install -r vendor/OCA/social/requirements.txt
+RUN --mount=type=cache,destination=~/.cache/uv uv pip install --upgrade pyOpenSSL cryptography
 RUN --mount=type=cache,destination=~/.cache/uv <<EOF
+    uv pip install PyPDF2
     uv pip install RestrictedPython
     uv pip install asyncio-mqtt
     uv pip install aiomqtt
@@ -180,8 +188,10 @@ EOF
 USER root
 
 # Доустанавливаем пакеты из vendor
-RUN dpkg -i /tmp/debs/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-RUN dpkg -i /tmp/debs/wkhtmltox_0.12.5-1.bionic_amd64.deb
+# RUN dpkg -i /tmp/debs/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+# RUN dpkg -i /tmp/debs/wkhtmltox_0.12.5-1.bionic_amd64.deb
+# RUN dpkg -i /tmp/debs/wkhtmltox_0.12.6-1.buster_amd64.deb
+# RUN apt --fix-broken install
 RUN rm -f /tmp/debs/*
 
 USER odoo
