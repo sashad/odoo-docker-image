@@ -45,10 +45,20 @@ RUN <<EOF
         iproute2 \
         iputils-ping \
         python-dev-is-python3 \
-        postgresql-client-16 \
+        gnupg \
+        curl \
+        ca-certificates \
         wkhtmltopdf
     rm -rf /var/lib/apt/lists/*
 EOF
+
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update
+
+# Install PostgreSQL 18 client
+RUN apt-get install -y postgresql-client-18 && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN rm -f /etc/nginx/sites-enabled/*
 COPY etc /etc
